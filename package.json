@@ -11,5 +11,10 @@
     "test": "./scripts/run-tests.sh",
     "update-exports": "./scripts/update-exports.sh"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "exports": {
+    "./coordinates": "./src/coordinates.js",
+    "./format-number": "./src/format-number.js",
+    "./round-steps": "./src/round-steps.js"
+  }
 }
