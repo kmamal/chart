@@ -14,6 +14,7 @@
   "license": "MIT",
   "exports": {
     "./coordinates": "./src/coordinates.js",
+    "./resample": "./src/resample.js",
     "./format-number": "./src/format-number.js",
     "./round-steps": "./src/round-steps.js"
   }
