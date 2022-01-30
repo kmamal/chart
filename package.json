@@ -1,0 +1,15 @@
+{
+  "version": "0.0.0",
+  "name": "@kmamal/chart",
+  "description": "chart",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kmamal/chart.git"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test": "./scripts/run-tests.sh",
+    "update-exports": "./scripts/update-exports.sh"
+  },
+  "license": "MIT"
+}
