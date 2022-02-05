@@ -37,4 +37,15 @@ const roundSteps = (start, end, step) => {
 	}
 }
 
-module.exports = { roundSteps }
+const iterate = function * (start, end, step) {
+	if (step > 0) {
+		for (let x = start; x < end; x += step) { yield x }
+	} else {
+		for (let x = start; x > end; x += step) { yield x }
+	}
+}
+
+module.exports = {
+	roundSteps,
+	iterate,
+}
