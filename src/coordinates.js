@@ -63,6 +63,10 @@ const setTransform = (ctx, coordinates, area = ctx.canvas) => {
 
 module.exports = {
 	calcParameters,
+	makeTransformPosition,
+	makeReversePosition,
+	makeTransformLength,
+	makeReverseLength,
 	makeTransformers,
 	setTransform,
 }
