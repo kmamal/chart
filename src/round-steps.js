@@ -18,11 +18,11 @@ const roundSteps = (start, end, step) => {
 	const endSign = Math.sign(start)
 	const stepSign = Math.sign(step)
 	let startRounding = Math.abs(start) % bestStep
-	if (startRounding && stepSign * startSign > 0) {
+	if (startRounding && stepSign * startSign >= 0) {
 		startRounding = bestStep - startRounding
 	}
 	let endRounding = Math.abs(end) % bestStep
-	if (endRounding && stepSign * endSign > 0) {
+	if (endRounding && stepSign * endSign >= 0) {
 		endRounding = bestStep - endRounding
 	}
 
