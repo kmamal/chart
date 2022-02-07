@@ -17,5 +17,8 @@
     "./resample": "./src/resample.js",
     "./format-number": "./src/format-number.js",
     "./round-steps": "./src/round-steps.js"
+  },
+  "dependencies": {
+    "@kmamal/math": "^0.0.60"
   }
 }

@@ -1,5 +1,9 @@
 
-const formatNumber = (x) => {
+const formatNumber = (_x, precision = null) => {
+	const x = precision !== null
+		? parseFloat(_x.toPrecision(precision))
+		: _x
+
 	const chars = Array.from(x.toExponential())
 
 	let wholeStart
