@@ -37,7 +37,7 @@ const makeReversePositionLog = (is, d) => {
 }
 
 const makeTransformersLog = (src1, src2, dst1, dst2) => {
-	const { scale, delta } = calcParameters(src1, src2, dst1, dst2)
+	const { scale, delta } = calcParametersLog(src1, src2, dst1, dst2)
 	const inverseScale = 1 / scale
 	return {
 		transformPosition: makeTransformPositionLog(scale, delta),
@@ -68,5 +68,9 @@ module.exports = {
 	makeTransformLength,
 	makeReverseLength,
 	makeTransformers,
+	calcParametersLog,
+	makeTransformPositionLog,
+	makeReversePositionLog,
+	makeTransformersLog,
 	setTransform,
 }
