@@ -2,6 +2,8 @@
 const factors = [ 1, 2, 5, 10 ]
 
 const roundSteps = (start, end, step) => {
+	if (start === end) { return null }
+
 	const minStep = Math.abs(step)
 
 	const exp = 10 ** Math.ceil(Math.log10(minStep) - 1)

@@ -16,9 +16,10 @@
     "./coordinates": "./src/coordinates.js",
     "./resample": "./src/resample.js",
     "./format-number": "./src/format-number.js",
-    "./round-steps": "./src/round-steps.js"
+    "./round-steps": "./src/round-steps.js",
+    "./round-steps-date": "./src/round-steps-date.js"
   },
   "dependencies": {
-    "@kmamal/math": "^0.0.60"
+    "@kmamal/util": "^0.0.79"
   }
 }
