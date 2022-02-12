@@ -20,6 +20,6 @@
     "./round-steps-date": "./src/round-steps-date.js"
   },
   "dependencies": {
-    "@kmamal/util": "^0.0.79"
+    "@kmamal/util": "^0.0.81"
   }
 }
