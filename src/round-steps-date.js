@@ -91,7 +91,7 @@ const roundStepsDate = (_start, _end, step) => {
 	}
 }
 
-const iterate = function * (start, end, stepValue, stepPart) {
+const iterateDate = function * (start, end, stepValue, stepPart) {
 	const endTime = end.timestamp
 	const x = clone(start)
 	while (x.timestamp !== endTime) {
@@ -102,5 +102,5 @@ const iterate = function * (start, end, stepValue, stepPart) {
 
 module.exports = {
 	roundStepsDate,
-	iterate,
+	iterateDate,
 }
