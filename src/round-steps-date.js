@@ -3,7 +3,10 @@ const { PARTS, fromTimestamp } = require('@kmamal/util/date/date')
 const { ceil, floor } = require('@kmamal/util/date/rounding')
 const { shift } = require('@kmamal/util/date/shift')
 
-const dYear = DURATION.year
+const {
+	year: dYear,
+	second: dSec,
+} = DURATION
 
 const factors10 = [ 10, 5, 2, 1 ]
 const factors12 = [ 6, 4, 3, 2, 1 ]
@@ -28,21 +31,21 @@ const roundStepsDate = (_start, _end, step) => {
 
 	const minStep = Math.abs(step)
 
-	const constantParts = {}
-
 	let index = 0
-	let part = PARTS[index]
-	let factors = partFactors[part]
+	let stepPart = PARTS[index]
+	let factors = partFactors[stepPart]
 	let stepValue = factors[0]
-	let stepPart = part
 
+	let part = stepPart
 	findStep:
 	for (;;) {
 		for (const factor of factors) {
 			const d = duration(factor, part)
-			if (d < minStep) { break findStep }
-			stepValue = factor
+			if (d < minStep) {
+				break findStep
+			}
 			stepPart = part
+			stepValue = factor
 		}
 
 		part = PARTS[++index]
@@ -53,15 +56,20 @@ const roundStepsDate = (_start, _end, step) => {
 		const exp = 10 ** Math.ceil(Math.log10(minStep / dYear) - 1)
 		for (let i = factors.length - 1; i >= 0; i--) {
 			stepValue = factors[i] * exp
-			const d = duration(stepValue, part)
+			const d = duration(stepValue, stepPart)
 			if (d > minStep) { break }
 		}
-	} else if (stepPart === 'millisecond' && stepValue === 10) {
+	} else if (stepPart === 'second' && stepValue === 1) {
 		const exp = 10 ** Math.ceil(Math.log10(minStep) - 1)
+		let value
 		for (let i = factors.length - 1; i >= 0; i--) {
-			stepValue = factors[i] * exp
-			const d = duration(stepValue, part)
+			value = factors[i] * exp
+			const d = duration(value, 'millisecond')
 			if (d > minStep) { break }
+		}
+		if (value < dSec) {
+			stepValue = value
+			stepPart = 'millisecond'
 		}
 	}
 
