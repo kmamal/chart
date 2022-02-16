@@ -1,9 +1,11 @@
-const { duration } = require('@kmamal/util/date/duration')
+const { DURATION, duration } = require('@kmamal/util/date/duration')
 const { PARTS, fromTimestamp } = require('@kmamal/util/date/date')
 const { elapsed } = require('@kmamal/util/date/elapsed')
 const { ceil, floor } = require('@kmamal/util/date/rounding')
 const { shift } = require('@kmamal/util/date/shift')
 const { clone } = require('@kmamal/util/date/clone')
+
+const dYear = DURATION.year
 
 const factors10 = [ 10, 5, 2, 1 ]
 const factors12 = [ 6, 4, 3, 2, 1 ]
@@ -41,7 +43,7 @@ const roundStepsDate = (_start, _end, step) => {
 	}
 
 	let factors = partFactors[part]
-	let stepValue = factors[factors.length - 1]
+	let stepValue = factors[0]
 	let stepPart = part
 
 	findStep:
@@ -55,6 +57,15 @@ const roundStepsDate = (_start, _end, step) => {
 
 		part = PARTS[++index]
 		factors = partFactors[part]
+	}
+
+	if (stepPart === 'year' && stepValue === 10) {
+		const exp = 10 ** Math.ceil(Math.log10(minStep / dYear) - 1)
+		for (let i = factors.length - 1; i >= 0; i--) {
+			stepValue = factors[i] * exp
+			const d = duration(stepValue, part)
+			if (d > minStep) { break }
+		}
 	}
 
 	const sign = Math.sign(step)
