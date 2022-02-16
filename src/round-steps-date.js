@@ -104,10 +104,10 @@ const roundStepsDate = (_start, _end, step) => {
 
 const iterateDate = function * (start, end, stepValue, stepPart) {
 	const endTime = end.timestamp
-	const x = clone(start)
-	while (x.timestamp < endTime) {
-		yield x
-		shift.$$$(x, stepPart, stepValue)
+	let date = start
+	while (date.timestamp < endTime) {
+		yield date
+		date = shift(date, stepPart, stepValue)
 	}
 }
 
