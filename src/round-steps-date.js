@@ -1,9 +1,7 @@
 const { DURATION, duration } = require('@kmamal/util/date/duration')
 const { PARTS, fromTimestamp } = require('@kmamal/util/date/date')
-const { elapsed } = require('@kmamal/util/date/elapsed')
 const { ceil, floor } = require('@kmamal/util/date/rounding')
 const { shift } = require('@kmamal/util/date/shift')
-const { clone } = require('@kmamal/util/date/clone')
 
 const dYear = DURATION.year
 
@@ -33,15 +31,7 @@ const roundStepsDate = (_start, _end, step) => {
 	const constantParts = {}
 
 	let index = 0
-	let part
-	while (index < PARTS.length) {
-		part = PARTS[index]
-		const e = elapsed(start, end, part)
-		if (e !== 0) { break }
-		constantParts[part] = start[part]
-		index++
-	}
-
+	let part = PARTS[index]
 	let factors = partFactors[part]
 	let stepValue = factors[0]
 	let stepPart = part
@@ -93,13 +83,12 @@ const roundStepsDate = (_start, _end, step) => {
 	let endPart = end[stepPart]
 	if (stepPart === 'month' || stepPart === 'day') { endPart-- }
 	let endPartDiff = -endPart % stepValue
-	if (endPartDiff !== 0 && !isPositive) {
+	if (endPartDiff !== 0 && isPositive) {
 		endPartDiff = stepValue + endPartDiff
 	}
 	shift.$$$(end, stepPart, endPartDiff)
 
 	return {
-		constantParts,
 		start,
 		end,
 		step: [
@@ -125,7 +114,24 @@ const iterateDate = function * (start, end, stepValue, stepPart) {
 	}
 }
 
+const iterateReverseDate = function * (start, end, stepValue, stepPart) {
+	const startTime = start.timestamp
+	let date = shift(end, stepPart, -stepValue)
+	if (stepValue > 0) {
+		while (date.timestamp >= startTime) {
+			yield date
+			date = shift(date, stepPart, -stepValue)
+		}
+	} else {
+		while (date.timestamp <= startTime) {
+			yield date
+			date = shift(date, stepPart, -stepValue)
+		}
+	}
+}
+
 module.exports = {
 	roundStepsDate,
 	iterateDate,
+	iterateReverseDate,
 }
