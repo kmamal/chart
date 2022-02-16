@@ -66,6 +66,13 @@ const roundStepsDate = (_start, _end, step) => {
 			const d = duration(stepValue, part)
 			if (d > minStep) { break }
 		}
+	} else if (stepPart === 'millisecond' && stepValue === 10) {
+		const exp = 10 ** Math.ceil(Math.log10(minStep) - 1)
+		for (let i = factors.length - 1; i >= 0; i--) {
+			stepValue = factors[i] * exp
+			const d = duration(stepValue, part)
+			if (d > minStep) { break }
+		}
 	}
 
 	const sign = Math.sign(step)
@@ -105,9 +112,16 @@ const roundStepsDate = (_start, _end, step) => {
 const iterateDate = function * (start, end, stepValue, stepPart) {
 	const endTime = end.timestamp
 	let date = start
-	while (date.timestamp < endTime) {
-		yield date
-		date = shift(date, stepPart, stepValue)
+	if (stepValue > 0) {
+		while (date.timestamp < endTime) {
+			yield date
+			date = shift(date, stepPart, stepValue)
+		}
+	} else {
+		while (date.timestamp > endTime) {
+			yield date
+			date = shift(date, stepPart, stepValue)
+		}
 	}
 }
 
