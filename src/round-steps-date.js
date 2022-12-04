@@ -1,7 +1,7 @@
 const { DURATION, duration } = require('@kmamal/util/date/duration')
 const { PARTS, fromTimestamp } = require('@kmamal/util/date/date')
 const { ceil, floor } = require('@kmamal/util/date/rounding')
-const { shift } = require('@kmamal/util/date/shift')
+const { shift, shiftTimestamp } = require('@kmamal/util/date/shift')
 
 const {
 	year: dYear,
@@ -27,6 +27,7 @@ const partFactors = {
 const roundStepsDate = (_start, _end, step) => {
 	const start = fromTimestamp(_start)
 	const end = fromTimestamp(_end)
+
 	if (start.timestamp === end.timestamp) { return null }
 
 	const minStep = Math.abs(step)
@@ -107,15 +108,15 @@ const roundStepsDate = (_start, _end, step) => {
 }
 
 const iterateDate = function * (start, end, stepValue, stepPart) {
-	const endTime = end.timestamp
+	const lastTime = shiftTimestamp(end.timestamp, stepPart, -stepValue)
 	let date = start
 	if (stepValue > 0) {
-		while (date.timestamp < endTime) {
+		while (date.timestamp <= lastTime) {
 			yield date
 			date = shift(date, stepPart, stepValue)
 		}
 	} else {
-		while (date.timestamp > endTime) {
+		while (date.timestamp >= lastTime) {
 			yield date
 			date = shift(date, stepPart, stepValue)
 		}
