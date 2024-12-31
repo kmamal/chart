@@ -24,7 +24,7 @@ const partFactors = {
 	millisecond: factors10,
 }
 
-const roundStepsDate = (_start, _end, step) => {
+const roundStopsDate = (_start, _end, step) => {
 	const start = fromTimestamp(_start)
 	const end = fromTimestamp(_end)
 
@@ -140,7 +140,7 @@ const iterateReverseDate = function * (start, end, stepValue, stepPart) {
 }
 
 module.exports = {
-	roundStepsDate,
+	roundStopsDate,
 	iterateDate,
 	iterateReverseDate,
 }

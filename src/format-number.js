@@ -1,68 +1,57 @@
 
-const formatNumber = (_x, precision = null) => {
-	const x = precision !== null
-		? parseFloat(_x.toPrecision(precision))
-		: _x
+const formatNumber = (x, precision = null) => {
+	const str = precision !== null
+		? x.toExponential(precision - 1)
+		: x.toExponential()
+	const chars = Array.from(str)
 
-	const chars = Array.from(x.toExponential())
+	const firstChar = chars[0]
+	const hasSign = firstChar === '-' || firstChar === '+'
 
-	let wholeStart
-	let wholeEnd
+	const wholeStart = hasSign ? 1 : 0
+	const hasWhole = chars[wholeStart] !== '0'
+	if (!hasWhole) { return '0' }
+	const wholeEnd = wholeStart + 1
 
-	if (chars[0] === '-' || chars[0] === '+') {
-		wholeStart = 1
-		wholeEnd = 2
-	} else {
-		wholeStart = 0
-		wholeEnd = 1
-	}
-	if (chars[wholeStart] === '0') { wholeStart = wholeEnd }
+	const eIndex = chars.indexOf('e', wholeEnd)
 
-	let fracStart
-	let fracEnd
-	if (chars[wholeEnd] === '.') {
-		fracStart = wholeEnd + 1
-		fracEnd = chars.lastIndexOf('e')
-	} else {
-		fracStart = wholeEnd
-		fracEnd = wholeEnd
-	}
+	const fracStart = Math.min(eIndex, wholeEnd + 1)
+	const fracEnd = eIndex
 
-	const exp = parseInt(chars.slice(fracEnd + 1).join(''), 10)
+	const expStart = eIndex + 1
+	const exp = parseInt(chars.slice(expStart).join(''), 10)
+	const isValueLessThanOne = exp < 0
 
-	const signLength = wholeStart
-	const wholeLength = wholeEnd - wholeStart
-	const fracLength = fracEnd - fracStart
+	const numSignChars = wholeStart
+	const numWholeChars = 1
+	const numFracChars = fracEnd - fracStart
 
-	let leadingZeros = 0
-	let trailingZeros = 0
-	if (exp > fracLength) {
-		trailingZeros = exp - fracLength
-	} else if (-exp >= wholeLength) {
-		leadingZeros = Math.max(0, (-exp + 1) - wholeLength)
-	}
+	const numLeadingZeros = Math.max(0, -exp)
+	const numTrailingZeros = Math.max(0, exp - numFracChars)
 
-	const totalLength = 0
-		+ signLength
-		+ leadingZeros
-		+ wholeLength
-		+ fracLength
-		+ trailingZeros
-	const res = new Array(totalLength)
+	const lengthEstimate = 1
+		+ numSignChars
+		+ numLeadingZeros
+		+ 1
+		+ numWholeChars
+		+ numFracChars
+		+ numTrailingZeros
+	const res = new Array(Math.floor(lengthEstimate * 1.33))
+
 	let writeIndex = 0
 
-	const wholeDigits = leadingZeros ? 1 : wholeLength + exp
-	let commaPosition = wholeDigits
+	const numWholeDigits = isValueLessThanOne ? 1 : exp + 1
+	let commaPosition = numWholeDigits
 
-	if (wholeStart) {
+	if (hasSign) {
 		res[writeIndex++] = chars[0]
 		commaPosition++
 	}
 
-	let dotStepper = 3 - (wholeDigits % 3)
+	let dotStepper = 3 - (numWholeDigits % 3)
 	if (dotStepper === 3) { dotStepper = 0 }
 
-	for (let i = 1; i < leadingZeros; i++) {
+	for (let i = 0; i < numLeadingZeros; i++) {
 		if (writeIndex === commaPosition) {
 			res[writeIndex++] = ','
 			dotStepper = 0
@@ -75,7 +64,7 @@ const formatNumber = (_x, precision = null) => {
 		++dotStepper
 	}
 
-	for (let i = wholeStart; i < wholeEnd; i++) {
+	{
 		if (writeIndex === commaPosition) {
 			res[writeIndex++] = ','
 			dotStepper = 0
@@ -84,7 +73,7 @@ const formatNumber = (_x, precision = null) => {
 			dotStepper = 0
 			commaPosition++
 		}
-		res[writeIndex++] = chars[i]
+		res[writeIndex++] = chars[wholeStart]
 		++dotStepper
 	}
 
@@ -101,7 +90,7 @@ const formatNumber = (_x, precision = null) => {
 		++dotStepper
 	}
 
-	for (let i = 0; i < trailingZeros; i++) {
+	for (let i = 0; i < numTrailingZeros; i++) {
 		if (writeIndex === commaPosition) {
 			res[writeIndex++] = ','
 			dotStepper = 0
@@ -113,15 +102,6 @@ const formatNumber = (_x, precision = null) => {
 		res[writeIndex++] = '0'
 		++dotStepper
 	}
-
-	// console.log({
-	// 	chars: chars.join(''),
-	// 	sign: chars.slice(0, wholeStart).join(''),
-	// 	whole: chars.slice(wholeStart, wholeEnd).join(''),
-	// 	frac: chars.slice(fracStart, fracEnd).join(''),
-	// 	exp,
-	// 	res: res.join(''),
-	// })
 
 	return res.join('')
 }
