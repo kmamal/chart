@@ -42,7 +42,6 @@ const iterate = function * (start, end, step) {
 	if (D.gt(step, D.fromNumber(0))) {
 		for (let x = start; D.lte(x, end); x = D.add(x, step)) { yield D.toNumber(x) }
 	} else {
-		console.log(2, { start, end, step })
 		for (let x = start; D.gte(x, end); x = D.add(x, step)) { yield D.toNumber(x) }
 	}
 }
