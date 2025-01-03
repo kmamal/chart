@@ -1,7 +1,7 @@
-const { DURATION, duration } = require('@kmamal/util/date/duration')
-const { PARTS, fromTimestamp } = require('@kmamal/util/date/date')
-const { ceil, floor } = require('@kmamal/util/date/rounding')
-const { shift, shiftTimestamp } = require('@kmamal/util/date/shift')
+const { DURATION, duration } = require('@kmamal/date/duration')
+const { PARTS, fromTimestamp } = require('@kmamal/date/date')
+const { ceil, floor } = require('@kmamal/date/rounding')
+const { shift, shiftTimestamp } = require('@kmamal/date/shift')
 
 const {
 	year: dYear,

@@ -1,3 +1,4 @@
+const D = require('@kmamal/numbers/decimal/base10')
 
 const factors = [ 1, 2, 5, 10 ]
 
@@ -6,31 +7,29 @@ const roundStops = (start, end, step) => {
 
 	const minStep = Math.abs(step)
 
-	const exp = 10 ** Math.ceil(Math.log10(minStep) - 1)
+	const scale = 10 ** Math.ceil(Math.log10(minStep) - 1)
 	let bestStep
 	for (const factor of factors) {
-		const candidate = factor * exp
+		const candidate = factor * scale
 		if (candidate >= minStep) {
 			bestStep = candidate
 			break
 		}
 	}
 
-	const startSign = Math.sign(start)
-	const endSign = Math.sign(start)
-	const stepSign = Math.sign(step)
-	let startRounding = Math.abs(start) % bestStep
-	if (startRounding && stepSign * startSign >= 0) {
-		startRounding = bestStep - startRounding
+	let roundStart = start / bestStep
+	let roundEnd = end / bestStep
+	if (start < end) {
+		roundStart = Math.ceil(roundStart)
+		roundEnd = Math.floor(roundEnd)
+	} else {
+		roundEnd = Math.ceil(roundEnd)
+		roundStart = Math.floor(roundStart)
 	}
-	let endRounding = Math.abs(end) % bestStep
-	if (endRounding && stepSign * endSign >= 0) {
-		endRounding = bestStep - endRounding
-	}
-
-	const roundStep = stepSign * bestStep
-	const roundStart = start + stepSign * startRounding
-	const roundEnd = end + stepSign * endRounding
+	let roundStep = D.fromNumber(bestStep)
+	roundStart = D.mul(D.fromInteger(BigInt(roundStart)), roundStep)
+	roundEnd = D.mul(D.fromInteger(BigInt(roundEnd)), roundStep)
+	roundStep = D.mul(roundStep, D.fromInteger(BigInt(Math.sign(step))))
 
 	return {
 		start: roundStart,
@@ -40,10 +39,11 @@ const roundStops = (start, end, step) => {
 }
 
 const iterate = function * (start, end, step) {
-	if (step > 0) {
-		for (let x = start; x < end; x += step) { yield x }
+	if (D.gt(step, D.fromNumber(0))) {
+		for (let x = start; D.lte(x, end); x = D.add(x, step)) { yield D.toNumber(x) }
 	} else {
-		for (let x = start; x > end; x += step) { yield x }
+		console.log(2, { start, end, step })
+		for (let x = start; D.gte(x, end); x = D.add(x, step)) { yield D.toNumber(x) }
 	}
 }
 

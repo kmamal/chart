@@ -12,7 +12,9 @@
     "update-exports": "node ./scripts/update-exports.mjs"
   },
   "dependencies": {
-    "@kmamal/util": "^0.0.81"
+    "@kmamal/date": "^0.0.3",
+    "@kmamal/numbers": "^0.0.8",
+    "@kmamal/util": "^0.2.20"
   },
   "exports": {
     "./coordinates": "./src/coordinates.js",
