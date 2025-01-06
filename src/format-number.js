@@ -1,5 +1,9 @@
 
 const formatNumber = (x, precision = null) => {
+	if (!Number.isFinite(x)) {
+		throw Object.assign(new Error("not finite"), { x })
+	}
+
 	const str = precision !== null
 		? x.toExponential(precision - 1)
 		: x.toExponential()
@@ -91,10 +95,7 @@ const formatNumber = (x, precision = null) => {
 	}
 
 	for (let i = 0; i < numTrailingZeros; i++) {
-		if (writeIndex === commaPosition) {
-			res[writeIndex++] = ','
-			dotStepper = 0
-		} else if (dotStepper === 3) {
+		if (dotStepper === 3) {
 			res[writeIndex++] = '.'
 			dotStepper = 0
 			commaPosition++
@@ -106,4 +107,47 @@ const formatNumber = (x, precision = null) => {
 	return res.join('')
 }
 
-module.exports = { formatNumber }
+const toFixed = (formattedNumbers) => {
+	const len = formattedNumbers.length
+	const res = new Array(len)
+
+	let maxFracLen = 0
+	for (let i = 0; i < len; i++) {
+		const str = formattedNumbers[i]
+		const index = str.indexOf(',')
+		const fracLen = index === -1 ? 0 : str.length - index
+		maxFracLen = Math.max(maxFracLen, fracLen)
+		res[i] = fracLen
+	}
+
+	for (let i = 0; i < len; i++) {
+		const str = formattedNumbers[i]
+		const fracLen = res[i]
+
+		if (fracLen === maxFracLen) {
+			res[i] = str
+			continue
+		}
+
+		const parts = [ str ]
+
+		for (let j = fracLen; j < maxFracLen; j++) {
+			if (j === 0) {
+				parts.push(',')
+				continue
+			}
+
+			if (j % 4 === 0) {
+				parts.push('.')
+				continue
+			}
+
+			parts.push('0')
+		}
+
+		res[i] = parts.join('')
+	}
+	return res
+}
+
+module.exports = { formatNumber, toFixed }
