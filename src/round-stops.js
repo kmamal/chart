@@ -7,7 +7,7 @@ const roundStops = (start, end, step) => {
 		return {
 			start: D.fromNumber(start),
 			end: D.fromNumber(end),
-			step: D.fromNumber(step),
+			step: D.fromNumber(1),
 		}
 	}
 
