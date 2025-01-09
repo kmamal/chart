@@ -1,6 +1,9 @@
 
 const calcParameters = (src1, src2, dst1, dst2) => {
-	const scale = (dst2 - dst1) / (src2 - src1)
+	const srcHalfRange = src2 / 2 - src1 / 2
+	const dstHalfRange = dst2 / 2 - dst1 / 2
+
+	const scale = dstHalfRange / srcHalfRange
 	const delta = dst1 - src1 * scale
 	return { scale, delta }
 }

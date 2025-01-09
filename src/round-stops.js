@@ -3,7 +3,13 @@ const D = require('@kmamal/numbers/decimal/base10')
 const factors = [ 1, 2, 5, 10 ]
 
 const roundStops = (start, end, step) => {
-	if (start === end) { return null }
+	if (start === end) {
+		return {
+			start: D.fromNumber(start),
+			end: D.fromNumber(end),
+			step: D.fromNumber(step),
+		}
+	}
 
 	const minStep = Math.abs(step)
 
