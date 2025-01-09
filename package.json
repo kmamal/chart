@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@kmamal/date": "^0.0.3",
-    "@kmamal/numbers": "^0.0.9",
+    "@kmamal/numbers": "^0.0.11",
     "@kmamal/util": "^0.2.20"
   },
   "exports": {
