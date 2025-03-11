@@ -48,20 +48,67 @@ const makeTransformersLog = (src1, src2, dst1, dst2) => {
 	}
 }
 
-const setTransform = (ctx, coordinates, area = ctx.canvas) => {
-	const {
-		x: { from: x1, to: x2 },
-		y: { from: y1, to: y2 },
-	} = coordinates
+const makeTransformers2d = (src, dst) => {
+	const [
+		[ src1x, src1y ],
+		[ src2x, src2y ],
+	] = src
 
-	const {
-		x = 0, y = 0,
-		width: w, height: h,
-	} = area
+	const [
+		[ dst1x, dst1y ],
+		[ dst2x, dst2y ],
+	] = dst
 
-	const { scale: sX, delta: dX } = calcParameters(x1, x2, x, w - x)
-	const { scale: sY, delta: dY } = calcParameters(y1, y2, h - y, y)
-	ctx.setTransform(sX, 0, 0, sY, dX, dY)
+	const tx = makeTransformers(src1x, src2x, dst1x, dst2x)
+	const ty = makeTransformers(src1y, src2y, dst1y, dst2y)
+
+	return {
+		transformPosition: ([ x, y ]) => [
+			tx.transformPosition(x),
+			ty.transformPosition(y),
+		],
+		reversePosition: ([ x, y ]) => [
+			tx.reversePosition(x),
+			ty.reversePosition(y),
+		],
+		transformLength: ([ x, y ]) => [
+			tx.transformLength(x),
+			ty.transformLength(y),
+		],
+		reverseLength: ([ x, y ]) => [
+			tx.reverseLength(x),
+			ty.reverseLength(y),
+		],
+	}
+}
+
+const setTransform = (ctx, src, dst = null) => {
+	const [
+		[ src1x, src1y ],
+		[ src2x, src2y ],
+	] = src
+
+	let dst1x
+	let dst2x
+	let dst1y
+	let dst2y
+	if (dst === null) {
+		const { canvas: { width, height } } = ctx
+		dst1x = 0
+		dst2x = width
+		dst1y = 0
+		dst2y = height
+	}
+	else {
+		[
+			[ dst1x, dst1y ],
+			[ dst2x, dst2y ],
+		] = dst
+	}
+
+	const { scale: sx, delta: dx } = calcParameters(src1x, src2x, dst1x, dst2x)
+	const { scale: sy, delta: dy } = calcParameters(src1y, src2y, dst1y, dst2y)
+	ctx.setTransform(sx, 0, 0, sy, dx, dy)
 }
 
 module.exports = {
