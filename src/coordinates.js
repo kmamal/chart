@@ -122,5 +122,6 @@ module.exports = {
 	makeTransformPositionLog,
 	makeReversePositionLog,
 	makeTransformersLog,
+	makeTransformers2d,
 	setTransform,
 }
