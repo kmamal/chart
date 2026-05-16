@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@kmamal/date": "0.0.4",
-    "@kmamal/numbers": "0.0.13",
+    "@kmamal/numbers": "0.0.14",
     "@kmamal/util": "0.2.31"
   },
   "devDependencies": {
