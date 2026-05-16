@@ -12,9 +12,12 @@
     "update-exports": "node ./scripts/update-exports.mjs"
   },
   "dependencies": {
-    "@kmamal/date": "^0.0.3",
-    "@kmamal/numbers": "^0.0.12",
-    "@kmamal/util": "^0.2.24"
+    "@kmamal/date": "0.0.4",
+    "@kmamal/numbers": "0.0.13",
+    "@kmamal/util": "0.2.31"
+  },
+  "devDependencies": {
+    "@kmamal/testing": "0.0.33"
   },
   "exports": {
     "./coordinates": "./src/coordinates.js",
@@ -22,8 +25,5 @@
     "./format-number": "./src/format-number.js",
     "./round-stops": "./src/round-stops.js",
     "./round-stops-date": "./src/round-stops-date.js"
-  },
-  "devDependencies": {
-    "@kmamal/testing": "^0.0.30"
   }
 }

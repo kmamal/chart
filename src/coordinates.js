@@ -39,12 +39,17 @@ const makeReversePositionLog = (is, d) => {
 	return (x) => Math.exp(linear(x))
 }
 
+const makeTransformRatioLog = (s) => (r) => Math.log(r) * s
+const makeReverseRatioLog = (is) => (r) => Math.exp(r * is)
+
 const makeTransformersLog = (src1, src2, dst1, dst2) => {
 	const { scale, delta } = calcParametersLog(src1, src2, dst1, dst2)
 	const inverseScale = 1 / scale
 	return {
 		transformPosition: makeTransformPositionLog(scale, delta),
 		reversePosition: makeReversePositionLog(inverseScale, delta),
+		transformLength: makeTransformRatioLog(scale),
+		reverseLength: makeReverseRatioLog(inverseScale),
 	}
 }
 
@@ -121,6 +126,8 @@ module.exports = {
 	calcParametersLog,
 	makeTransformPositionLog,
 	makeReversePositionLog,
+	makeTransformRatioLog,
+	makeReverseRatioLog,
 	makeTransformersLog,
 	makeTransformers2d,
 	setTransform,

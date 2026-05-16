@@ -1,4 +1,5 @@
 const D = require('@kmamal/numbers/decimal/base10')
+const R = require('@kmamal/numbers/rational')
 
 const factors = [ 1, 2, 5, 10 ]
 
@@ -23,18 +24,20 @@ const roundStops = (start, end, step) => {
 		}
 	}
 
-	let roundStart = start / bestStep
-	let roundEnd = end / bestStep
+	bestStep = R.fromNumber(bestStep)
+	let roundStart = R.div(R.fromNumber(start), bestStep)
+	let roundEnd = R.div(R.fromNumber(end), bestStep)
 	if (start < end) {
-		roundStart = Math.ceil(roundStart)
-		roundEnd = Math.floor(roundEnd)
-	} else {
-		roundEnd = Math.ceil(roundEnd)
-		roundStart = Math.floor(roundStart)
+		roundStart = R.toInteger(R.ceil(roundStart))
+		roundEnd = R.toInteger(R.floor(roundEnd))
+	}
+	else {
+		roundStart = R.toInteger(R.floor(roundStart))
+		roundEnd = R.toInteger(R.ceil(roundEnd))
 	}
 	let roundStep = D.fromNumber(bestStep)
-	roundStart = D.mul(D.fromInteger(BigInt(roundStart)), roundStep)
-	roundEnd = D.mul(D.fromInteger(BigInt(roundEnd)), roundStep)
+	roundStart = D.mul(D.fromInteger(roundStart), roundStep)
+	roundEnd = D.mul(D.fromInteger(roundEnd), roundStep)
 	roundStep = D.mul(roundStep, D.fromInteger(BigInt(Math.sign(step))))
 
 	return {
@@ -44,11 +47,18 @@ const roundStops = (start, end, step) => {
 	}
 }
 
+const ZERO = D.fromNumber(0)
+
 const iterate = function * (start, end, step) {
-	if (D.gt(step, D.fromNumber(0))) {
-		for (let x = start; D.lte(x, end); x = D.add(x, step)) { yield D.toNumber(x) }
-	} else {
-		for (let x = start; D.gte(x, end); x = D.add(x, step)) { yield D.toNumber(x) }
+	if (D.gt(step, ZERO)) {
+		for (let x = start; D.lte(x, end); x = D.add(x, step)) {
+			yield D.toNumber(x)
+		}
+	}
+	else {
+		for (let x = start; D.gte(x, end); x = D.add(x, step)) {
+			yield D.toNumber(x)
+		}
 	}
 }
 

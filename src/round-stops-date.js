@@ -1,7 +1,7 @@
 const { DURATION, duration } = require('@kmamal/date/duration')
 const { PARTS, fromTimestamp } = require('@kmamal/date/date')
 const { ceil, floor } = require('@kmamal/date/rounding')
-const { shift, shiftTimestamp } = require('@kmamal/date/shift')
+const { shift } = require('@kmamal/date/shift')
 
 const {
 	year: dYear,
@@ -10,8 +10,8 @@ const {
 
 const factors10 = [ 10, 5, 2, 1 ]
 const factors12 = [ 6, 4, 3, 2, 1 ]
-const factors24 = [ 12, 8, 6, 4, 3, 2, 1 ]
-const factors60 = [ 30, 20, 15, 10, 5, 2, 1 ]
+const factors24 = [ 12, 8, ...factors12 ]
+const factors60 = [ 30, 20, 15, ...factors10 ]
 
 const partFactors = {
 	year: factors10,
@@ -28,18 +28,29 @@ const roundStopsDate = (_start, _end, step) => {
 	const start = fromTimestamp(_start)
 	const end = fromTimestamp(_end)
 
-	if (start.timestamp === end.timestamp) { return null }
+	if (_start === _end) {
+		return {
+			start,
+			end,
+			stepValue: 1,
+			stepPart: 'second',
+		}
+	}
 
 	const minStep = Math.abs(step)
 
-	let index = 0
-	let stepPart = PARTS[index]
-	let factors = partFactors[stepPart]
-	let stepValue = factors[0]
+	let stepPart = null
+	let stepValue = null
+	let factors
 
-	let part = stepPart
+	let partIndex
 	findStep:
-	for (;;) {
+	for (partIndex = 0; partIndex < PARTS.length; partIndex++) {
+		const part = PARTS[partIndex]
+		factors = partFactors[part]
+
+		if (part === 'millisecond') { break }
+
 		for (const factor of factors) {
 			const d = duration(factor, part)
 			if (d < minStep) {
@@ -48,25 +59,23 @@ const roundStopsDate = (_start, _end, step) => {
 			stepPart = part
 			stepValue = factor
 		}
-
-		part = PARTS[++index]
-		factors = partFactors[part]
 	}
 
-	if (stepPart === 'year' && stepValue === 10) {
+	if (stepPart === null && stepValue === null) {
 		const exp = 10 ** Math.ceil(Math.log10(minStep / dYear) - 1)
 		for (let i = factors.length - 1; i >= 0; i--) {
 			stepValue = factors[i] * exp
 			const d = duration(stepValue, stepPart)
-			if (d > minStep) { break }
+			if (d >= minStep) { break }
 		}
-	} else if (stepPart === 'second' && stepValue === 1) {
+	}
+	else if (stepPart === 'second' && stepValue === 1) {
 		const exp = 10 ** Math.ceil(Math.log10(minStep) - 1)
 		let value
 		for (let i = factors.length - 1; i >= 0; i--) {
 			value = factors[i] * exp
 			const d = duration(value, 'millisecond')
-			if (d > minStep) { break }
+			if (d >= minStep) { break }
 		}
 		if (value < dSec) {
 			stepValue = value
@@ -77,64 +86,59 @@ const roundStopsDate = (_start, _end, step) => {
 	const sign = Math.sign(step)
 	const isPositive = sign === 1
 
-	const round$$$ = isPositive ? ceil.$$$ : floor.$$$
-
-	round$$$(start, stepPart)
-	let startPart = start[stepPart]
-	if (stepPart === 'month' || stepPart === 'day') { startPart-- }
-	let startPartDiff = -startPart % stepValue
-	if (startPartDiff !== 0 && isPositive) {
-		startPartDiff = stepValue + startPartDiff
+	if (isPositive) {
+		ceil.$$$(start, stepPart)
+		floor.$$$(end, stepPart)
 	}
-	shift.$$$(start, stepPart, startPartDiff)
-
-	round$$$(end, stepPart)
-	let endPart = end[stepPart]
-	if (stepPart === 'month' || stepPart === 'day') { endPart-- }
-	let endPartDiff = -endPart % stepValue
-	if (endPartDiff !== 0 && isPositive) {
-		endPartDiff = stepValue + endPartDiff
+	else {
+		floor.$$$(start, stepPart)
+		ceil.$$$(end, stepPart)
 	}
-	shift.$$$(end, stepPart, endPartDiff)
+
+	let startValue = start[stepPart]
+	if (stepPart === 'month' || stepPart === 'day') { startValue-- }
+	let startDiff = -startValue % stepValue
+	if (startDiff !== 0 && isPositive) {
+		startDiff = stepValue + startDiff
+	}
+	shift.$$$(start, stepPart, startDiff)
+
+	let endValue = end[stepPart]
+	if (stepPart === 'month' || stepPart === 'day') { endValue-- }
+	let endDiff = -endValue % stepValue
+	if (endDiff !== 0 && !isPositive) {
+		endDiff = stepValue + endDiff
+	}
+	shift.$$$(end, stepPart, endDiff)
+
+	for (partIndex++; partIndex < PARTS.length; partIndex++) {
+		const part = PARTS[partIndex]
+		const value = part === 'month' || part === 'day' ? 1 : 0
+		start[part] = value
+		end[part] = value
+	}
 
 	return {
 		start,
 		end,
-		step: [
-			sign * stepValue,
-			stepPart,
-		],
+		stepValue: sign * stepValue,
+		stepPart,
 	}
 }
 
 const iterateDate = function * (start, end, stepValue, stepPart) {
-	const lastTime = shiftTimestamp(end.timestamp, stepPart, -stepValue)
+	const endTime = end.timestamp
 	let date = start
 	if (stepValue > 0) {
-		while (date.timestamp <= lastTime) {
-			yield date
-			date = shift(date, stepPart, stepValue)
-		}
-	} else {
-		while (date.timestamp >= lastTime) {
+		while (date.timestamp <= endTime) {
 			yield date
 			date = shift(date, stepPart, stepValue)
 		}
 	}
-}
-
-const iterateReverseDate = function * (start, end, stepValue, stepPart) {
-	const startTime = start.timestamp
-	let date = shift(end, stepPart, -stepValue)
-	if (stepValue > 0) {
-		while (date.timestamp >= startTime) {
+	else {
+		while (date.timestamp >= endTime) {
 			yield date
-			date = shift(date, stepPart, -stepValue)
-		}
-	} else {
-		while (date.timestamp <= startTime) {
-			yield date
-			date = shift(date, stepPart, -stepValue)
+			date = shift(date, stepPart, stepValue)
 		}
 	}
 }
@@ -142,5 +146,4 @@ const iterateReverseDate = function * (start, end, stepValue, stepPart) {
 module.exports = {
 	roundStopsDate,
 	iterateDate,
-	iterateReverseDate,
 }

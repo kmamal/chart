@@ -59,7 +59,8 @@ const formatNumber = (x, precision = null) => {
 		if (writeIndex === commaPosition) {
 			res[writeIndex++] = ','
 			dotStepper = 0
-		} else if (dotStepper === 3) {
+		}
+		else if (dotStepper === 3) {
 			res[writeIndex++] = '.'
 			dotStepper = 0
 			commaPosition++
@@ -72,7 +73,8 @@ const formatNumber = (x, precision = null) => {
 		if (writeIndex === commaPosition) {
 			res[writeIndex++] = ','
 			dotStepper = 0
-		} else if (dotStepper === 3) {
+		}
+		else if (dotStepper === 3) {
 			res[writeIndex++] = '.'
 			dotStepper = 0
 			commaPosition++
@@ -85,7 +87,8 @@ const formatNumber = (x, precision = null) => {
 		if (writeIndex === commaPosition) {
 			res[writeIndex++] = ','
 			dotStepper = 0
-		} else if (dotStepper === 3) {
+		}
+		else if (dotStepper === 3) {
 			res[writeIndex++] = '.'
 			dotStepper = 0
 			commaPosition++
