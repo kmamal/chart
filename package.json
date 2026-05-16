@@ -20,10 +20,10 @@
     "@kmamal/testing": "0.0.33"
   },
   "exports": {
-    "./coordinates": "./src/coordinates.js",
-    "./resample": "./src/resample.js",
-    "./format-number": "./src/format-number.js",
     "./round-stops": "./src/round-stops.js",
-    "./round-stops-date": "./src/round-stops-date.js"
+    "./format-number": "./src/format-number.js",
+    "./round-stops-date": "./src/round-stops-date.js",
+    "./resample": "./src/resample.js",
+    "./coordinates": "./src/coordinates.js"
   }
 }
