@@ -24,10 +24,10 @@ const roundStops = (start, end, step) => {
 		}
 	}
 
-	bestStep = R.fromNumber(bestStep)
-	let roundStart = R.div(R.fromNumber(start), bestStep)
-	let roundEnd = R.div(R.fromNumber(end), bestStep)
-	if (start < end) {
+	const rBestStep = R.fromNumber(bestStep)
+	let roundStart = R.div(R.fromNumber(start), rBestStep)
+	let roundEnd = R.div(R.fromNumber(end), rBestStep)
+	if (step < 0) {
 		roundStart = R.toInteger(R.ceil(roundStart))
 		roundEnd = R.toInteger(R.floor(roundEnd))
 	}
@@ -35,10 +35,10 @@ const roundStops = (start, end, step) => {
 		roundStart = R.toInteger(R.floor(roundStart))
 		roundEnd = R.toInteger(R.ceil(roundEnd))
 	}
-	let roundStep = D.fromNumber(bestStep)
+	const roundStep = D.fromNumber(bestStep)
 	roundStart = D.mul(D.fromInteger(roundStart), roundStep)
 	roundEnd = D.mul(D.fromInteger(roundEnd), roundStep)
-	roundStep = D.mul(roundStep, D.fromInteger(BigInt(Math.sign(step))))
+	if (step < 0) { roundStep.man = -roundStep.man }
 
 	return {
 		start: roundStart,
